@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  reactCompiler: true,
+  // Transpila a lib ReactBits para evitar problemas de ESM/TS em Next
+  transpilePackages: ["@appletosolutions/reactbits"],
 };
 
 export default nextConfig;
