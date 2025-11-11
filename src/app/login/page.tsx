@@ -50,23 +50,23 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
       <div className="card-base relative w-full max-w-6xl overflow-hidden rounded-2xl">
-        {/* Fundo de partículas cobrindo todo o card (acima do fundo) */}
-        <div className="absolute inset-0 z-10 pointer-events-none">
-          <Particles
-            className="w-full h-full"
-            particleCount={200}
-            colors={["#f9a825", "#f57c00", "#ffcc80"]}
-            speed={0.12}
-            sizeMin={2.5}
-            sizeMax={4}
-            opacity={0.35}
-          />
-        </div>
         <div className="relative z-20 grid grid-cols-1 lg:grid-cols-2">
           {/* Painel esquerdo com gradiente; imagens centralizadas */}
-          <div className="bg-gradient-to-br from-[#ff9d00] via-[#ffb233] to-[#ffcf71] p-8 sm:p-12 flex items-center justify-center">
+          <div className="relative bg-gradient-to-br from-[#ff9d00] via-[#ffb233] to-[#ffcf71] p-8 sm:p-12 flex items-center justify-center">
+            {/* Partículas apenas no painel esquerdo (fundo) */}
+            <div className="absolute inset-0 z-0 pointer-events-none">
+              <Particles
+                className="w-full h-full"
+                particleCount={200}
+                colors={["#f9a825", "#f57c00", "#ffcc80"]}
+                speed={0.12}
+                sizeMin={2.5}
+                sizeMax={4}
+                opacity={0.35}
+              />
+            </div>
             <div className="w-full max-w-[520px]">
-              <div className="relative aspect-[16/9] w-full">
+              <div className="relative z-10 aspect-[16/9] w-full">
                 {heroImages.map((img, idx) => (
                   <Image
                     key={idx}
@@ -77,7 +77,7 @@ export default function LoginPage() {
                   />
                 ))}
               </div>
-              <p className="mt-4 text-white text-sm sm:text-base font-medium drop-shadow-md text-center transition-opacity duration-700">
+              <p className="relative z-10 mt-4 text-white text-sm sm:text-base font-medium drop-shadow-md text-center transition-opacity duration-700">
                 {heroCaptions[currentIndex]}
               </p>
             </div>
