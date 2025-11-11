@@ -6,7 +6,7 @@ import Card from "@/components/Card";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
 import Select from "@/components/Select";
-import { particles as Particles } from "@appletosolutions/reactbits";
+import Particles from "@/components/Particles";
 // Imagens locais para o painel esquerdo e logo do projeto
 import heroImg1 from "./loginimages/imagemlogin1.png";
 import heroImg2 from "./loginimages/imagem login2.png";
@@ -53,17 +53,13 @@ export default function LoginPage() {
         {/* Fundo de partículas cobrindo todo o card (acima do fundo) */}
         <div className="absolute inset-0 z-10 pointer-events-none">
           <Particles
+            className="w-full h-full"
             particleCount={200}
-            particleColors={["#f9a825", "#f57c00", "#ffcc80"]}
-            particleSpread={1.2}
+            colors={["#f9a825", "#f57c00", "#ffcc80"]}
             speed={0.12}
-            alphaParticles={false}
-            particleBaseSize={3.2}
-            sizeRandomness={1}
-            disableRotation={false}
-            moveParticlesOnHover
-            particleHoverFactor={0.8}
-            cameraDistance={5}
+            sizeMin={2.5}
+            sizeMax={4}
+            opacity={0.35}
           />
         </div>
         <div className="relative z-20 grid grid-cols-1 lg:grid-cols-2">
