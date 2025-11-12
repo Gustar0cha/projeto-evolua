@@ -17,10 +17,7 @@ const allMembers: Member[] = [
   { id: "3", name: "Carlos Lima" },
 ];
 
-const allModules: Mod[] = [
-  { id: "m1", title: "Boas Práticas de Segurança" },
-  { id: "m2", title: "Onboarding da Empresa" },
-];
+const allModules: Mod[] = [];
 
 export default function ClassDetailPage({ params }: { params: { id: string } }) {
   const [members, setMembers] = useState<Member[]>([allMembers[0]]);

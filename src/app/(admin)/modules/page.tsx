@@ -11,8 +11,7 @@ import Link from "next/link";
 type ModuleItem = { id: string; title: string; createdAt: string; status: "Publicado" | "Rascunho" };
 
 const initialModules: ModuleItem[] = [
-  { id: "1", title: "Boas Práticas de Segurança", createdAt: "01/11/2025", status: "Publicado" },
-  { id: "2", title: "Onboarding da Empresa", createdAt: "25/10/2025", status: "Rascunho" },
+  { id: "3", title: "🧠 Avaliação de Aprendizado – Programa de Desenvolvimento IDEIAS", createdAt: "15/10/2023", status: "Rascunho" },
 ];
 
 export default function ModulesPage() {

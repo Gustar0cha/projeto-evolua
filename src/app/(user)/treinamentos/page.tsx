@@ -6,9 +6,7 @@ import Link from "next/link";
 type Training = { id: string; title: string; description: string; status: "Pendente" | "Em Andamento" | "Concluído" };
 
 const trainings: Training[] = [
-  { id: "m1", title: "Boas Práticas de Segurança", description: "Conceitos essenciais de segurança da informação.", status: "Pendente" },
-  { id: "m2", title: "Onboarding da Empresa", description: "Conheça nossa cultura e processos.", status: "Em Andamento" },
-  { id: "m3", title: "LGPD Básico", description: "Introdução à Lei Geral de Proteção de Dados.", status: "Concluído" },
+  { id: "m3", title: "🧠 Avaliação de Aprendizado – Programa de Desenvolvimento IDEIAS", description: "Este formulário tem como objetivo avaliar o aprendizado adquirido durante os módulos do Programa de Desenvolvimento Hospitalar da Prog Treinamento. Por favor, responda de forma sincera e objetiva. Suas respostas contribuirão para aprimorar continuamente a qualidade dos treinamentos.", status: "Pendente" },
 ];
 
 export default function MyTrainingsPage() {
