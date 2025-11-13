@@ -15,8 +15,11 @@ import {
 } from "@/components/ui/accordion";
 import {
   HomeIcon,
-  BookOpenIcon,
-  UsersIcon,
+  RectangleStackIcon,
+  UserGroupIcon,
+  UserIcon,
+  ChartBarIcon,
+  ChartPieIcon,
 } from "@heroicons/react/24/outline";
 // Logo removida da Sidebar conforme solicitação
 
@@ -36,14 +39,22 @@ const groups = [
   {
     id: "content",
     label: "Conteúdo",
-    items: [{ href: "/modules", label: "Módulos", icon: BookOpenIcon }],
+    items: [{ href: "/modules", label: "Módulos", icon: RectangleStackIcon }],
   },
   {
     id: "management",
     label: "Gestão",
     items: [
-      { href: "/classes", label: "Turmas", icon: UsersIcon },
-      { href: "/users", label: "Usuários", icon: UsersIcon },
+      { href: "/classes", label: "Turmas", icon: UserGroupIcon },
+      { href: "/users", label: "Usuários", icon: UserIcon },
+    ],
+  },
+  {
+    id: "reports",
+    label: "Relatórios",
+    items: [
+      { href: "/reports/students", label: "Relatórios de Alunos", icon: ChartPieIcon },
+      { href: "/reports/modules", label: "Relatórios de Módulos", icon: ChartBarIcon },
     ],
   },
 ];
