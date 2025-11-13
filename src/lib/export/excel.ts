@@ -32,7 +32,7 @@ export function buildWorkbookForStudentResult(result: ModuleResult) {
 export function buildWorkbookForAdminDashboard(overview: AdminOverviewData, perf: AdminPerformanceData) {
   const wb = XLSX.utils.book_new();
 
-  const statsSheet = aoaToSheet([["Métrica", "Valor"], ...overview.stats.map((s) => [s.label, s.value as any])]);
+  const statsSheet = aoaToSheet([["Métrica", "Valor"], ...overview.stats.map((s) => [s.label, s.value])]);
   appendSheet(wb, "VisãoGeral", statsSheet);
 
   const barSheet = aoaToSheet([["Mês", overview.bar.datasetLabel], ...overview.bar.labels.map((m, i) => [m, overview.bar.data[i]])]);
