@@ -13,7 +13,7 @@ export default function CollaboratorLayout({ children }: Props) {
   const handleSignOut = () => {
     try {
       localStorage.removeItem("role");
-    } catch {}
+    } catch { }
     router.replace("/login");
   };
   return (
@@ -22,6 +22,7 @@ export default function CollaboratorLayout({ children }: Props) {
         collapsed={collapsed}
         onToggle={() => setCollapsed((c) => !c)}
         userName="Colaborador"
+        role="colaborador"
         onSignOut={handleSignOut}
       />
       <div className="flex-1">

@@ -13,7 +13,7 @@ export default function ManagerLayout({ children }: Props) {
   const handleSignOut = () => {
     try {
       localStorage.removeItem("role");
-    } catch {}
+    } catch { }
     router.replace("/login");
   };
   return (
@@ -22,6 +22,7 @@ export default function ManagerLayout({ children }: Props) {
         collapsed={collapsed}
         onToggle={() => setCollapsed((c) => !c)}
         userName="Gestor"
+        role="gestor"
         onSignOut={handleSignOut}
       />
       <div className="flex-1">

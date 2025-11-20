@@ -5,8 +5,8 @@ import clsx from "clsx";
 import Button from "@/components/Button";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import siteIcon from "@/logo/icon.svg";
-import siteIconName from "@/logo/icon-name.svg";
+
+
 import {
   Accordion,
   AccordionItem,
@@ -27,6 +27,7 @@ type SidebarProps = {
   collapsed?: boolean;
   onToggle?: () => void;
   userName?: string;
+  role?: "gestor" | "colaborador";
   onSignOut?: () => void;
 };
 
@@ -59,7 +60,7 @@ const groups = [
   },
 ];
 
-export function Sidebar({ collapsed = false, onToggle, userName, onSignOut }: SidebarProps) {
+export function Sidebar({ collapsed = false, onToggle, userName, role = "gestor", onSignOut }: SidebarProps) {
   const pathname = usePathname();
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
@@ -81,20 +82,25 @@ export function Sidebar({ collapsed = false, onToggle, userName, onSignOut }: Si
             aria-controls="sidebar-nav"
             onClick={onToggle}
           >
-            <div className={clsx("relative transition-all duration-400 ease-in-out", collapsed ? "h-8 w-8" : "h-11 w-full max-w-[140px]")}> 
+            <div className={clsx("relative transition-all duration-400 ease-in-out", collapsed ? "h-8 w-8" : "h-11 w-full max-w-[140px]")}>
               {/* Ícone compacto quando recolhido */}
               <Image
-                src={siteIcon}
+                src="/assets/icon-evolua.svg"
                 alt="Logo"
+                width={32}
+                height={32}
                 className={clsx(
                   "absolute left-1/2 -translate-x-1/2 object-contain transition-all duration-400 ease-in-out",
                   collapsed ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-1 scale-95"
                 )}
               />
               {/* Logo com nome quando expandido */}
+              {/* Logo com nome quando expandido */}
               <Image
-                src={siteIconName}
+                src="/assets/logo-evolua.svg"
                 alt="Logo Evolua"
+                width={140}
+                height={40}
                 className={clsx(
                   "absolute left-1/2 -translate-x-1/2 object-contain transition-all duration-400 ease-in-out",
                   collapsed ? "opacity-0 -translate-y-1 scale-95" : "opacity-100 translate-y-0 scale-100"
@@ -107,7 +113,12 @@ export function Sidebar({ collapsed = false, onToggle, userName, onSignOut }: Si
       <nav id="sidebar-nav" className="mt-2" aria-label="Menu lateral">
         {collapsed ? (
           <div className="space-y-1">
-            {groups.flatMap((g) => g.items).map((item) => {
+            {(role === "colaborador"
+              ? [
+                { href: "/treinamentos", label: "Meus Treinamentos", icon: RectangleStackIcon },
+              ]
+              : groups.flatMap((g) => g.items)
+            ).map((item) => {
               const Icon = item.icon;
               const active = isActive(item.href);
               return (
@@ -128,8 +139,19 @@ export function Sidebar({ collapsed = false, onToggle, userName, onSignOut }: Si
             })}
           </div>
         ) : (
-          <Accordion type="multiple" defaultValue={["vision", "content", "management"]}>
-            {groups.map((group) => (
+          <Accordion type="multiple" defaultValue={role === "colaborador" ? ["training"] : ["vision", "content", "management"]}>
+            {(role === "colaborador"
+              ? [
+                {
+                  id: "training",
+                  label: "Treinamentos",
+                  items: [
+                    { href: "/treinamentos", label: "Meus Treinamentos", icon: RectangleStackIcon },
+                  ],
+                },
+              ]
+              : groups
+            ).map((group) => (
               <AccordionItem key={group.id} value={group.id}>
                 <AccordionTrigger>{group.label}</AccordionTrigger>
                 <AccordionContent>

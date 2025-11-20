@@ -1,19 +1,26 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fff7ea; /* claro, derivado da paleta */
-  --foreground: #2f2a25; /* marrom neutro escuro para texto */
-  --primary: #ff9d00;    /* laranja principal */
-  --primary-700: #e68c00;
-  --secondary: #b6771d;  /* dourado/marrom médio */
-  --secondary-700: #9a6319;
-  --surface: #ffffff;    /* cards brancos modernos */
-  --accent: #ffcf71;     /* amarelo claro para detalhes */
+  --background: #ffffff;
+  --foreground: #0f172a;
+  /* slate-900 */
+  --primary: #005f8f;
+  /* Blue/Teal brand color */
+  --primary-700: #004a70;
+  --secondary: #f1f5f9;
+  /* slate-100 */
+  --secondary-700: #e2e8f0;
+  --surface: #ffffff;
+  --accent: #f0f9ff;
+  /* sky-50 */
 
   /* tokens auxiliares para shadcn */
-  --input: #e5e7eb;      /* slate-200 */
-  --border: #e5e7eb;     /* slate-200 */
+  --input: #cbd5e1;
+  /* slate-300 */
+  --border: #cbd5e1;
+  /* slate-300 */
   --ring: var(--primary);
+  --radius: 0.5rem;
 }
 
 @theme inline {
@@ -25,9 +32,12 @@
   /* mapeamento de cores para utilitários shadcn */
   --color-primary: var(--primary);
   --color-primary-foreground: #ffffff;
-  --color-secondary: #f4f4f5; /* zinc-100 */
-  --color-secondary-foreground: #111827; /* gray-900 */
-  --color-destructive: #ef4444; /* red-500 */
+  --color-secondary: #f4f4f5;
+  /* zinc-100 */
+  --color-secondary-foreground: #111827;
+  /* gray-900 */
+  --color-destructive: #ef4444;
+  /* red-500 */
   --color-destructive-foreground: #ffffff;
   --color-muted: #f5f5f5;
   --color-muted-foreground: #6b7280;
@@ -44,22 +54,29 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a; /* fundo geral escuro */
-    --foreground: #e5e5e5; /* texto claro */
+    --background: #0a0a0a;
+    /* fundo geral escuro */
+    --foreground: #e5e5e5;
+    /* texto claro */
     /* Mantém superfícies claras para legibilidade dos gráficos e textos */
-    --surface: #ffffff; /* cards e popovers claros mesmo em dark */
-    --input: #e5e7eb; /* inputs com fundo claro e borda suave */
-    --border: #e5e7eb; /* bordas claras para consistência visual */
-    --ring: #ff9d00; /* mantém o foco com a cor da marca */
+    --surface: #ffffff;
+    /* cards e popovers claros mesmo em dark */
+    --input: #e5e7eb;
+    /* inputs com fundo claro e borda suave */
+    --border: #e5e7eb;
+    /* bordas claras para consistência visual */
+    --ring: #ff9d00;
+    /* mantém o foco com a cor da marca */
     /* Override de foregrounds em superfícies claras no dark mode */
-    --color-card-foreground: #111827; /* texto escuro em cards brancos */
-    --color-popover-foreground: #111827; /* texto escuro em popovers brancos */
+    --color-card-foreground: #111827;
+    /* texto escuro em cards brancos */
+    --color-popover-foreground: #111827;
+    /* texto escuro em popovers brancos */
   }
 }
 
 body {
-  background: radial-gradient(1000px 600px at 10% -10%, #fff1d6 0%, var(--background) 45%),
-    radial-gradient(900px 500px at 100% 0%, #ffe7bb 0%, var(--background) 55%);
+  background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans",
@@ -80,12 +97,37 @@ body {
 }
 
 /* Utilitários de marca */
-.text-brand { color: var(--primary); }
-.bg-brand { background-color: var(--primary); }
-.bg-brand-700 { background-color: var(--primary-700); }
-.ring-brand { --tw-ring-color: var(--primary); }
-.border-brand { border-color: var(--primary); }
+.text-brand {
+  color: var(--primary);
+}
+
+.bg-brand {
+  background-color: var(--primary);
+}
+
+.bg-brand-700 {
+  background-color: var(--primary-700);
+}
+
+.ring-brand {
+  --tw-ring-color: var(--primary);
+}
+
+.border-brand {
+  border-color: var(--primary);
+}
 
 /* Form fix: garante texto visível */
-input, select, textarea { color: #0f172a; } /* slate-900 */
-input::placeholder, textarea::placeholder { color: #94a3b8; } /* slate-400 */
+input,
+select,
+textarea {
+  color: #0f172a;
+}
+
+/* slate-900 */
+input::placeholder,
+textarea::placeholder {
+  color: #94a3b8;
+}
+
+/* slate-400 */
