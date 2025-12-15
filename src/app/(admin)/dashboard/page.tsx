@@ -16,6 +16,9 @@ import {
 
 const ReactECharts = dynamic(() => import('echarts-for-react'), { ssr: false });
 
+// Força renderização dinâmica para evitar erros de build
+export const dynamicRendering = "force-dynamic";
+
 type DashboardStats = {
   totalStudents: number;
   totalModules: number;

@@ -10,6 +10,9 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
 
+// Força renderização dinâmica para evitar erros de build
+export const dynamic = "force-dynamic";
+
 type ClassItem = {
   id: string;
   name: string;

@@ -10,6 +10,9 @@ import { toast } from "sonner";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import ImageUpload from "@/components/ImageUpload";
 
+// Força renderização dinâmica para evitar erros de build
+export const dynamic = "force-dynamic";
+
 type Section = {
   id: string;
   type: 'video' | 'quiz' | 'text';

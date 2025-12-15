@@ -10,6 +10,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
+// Força renderização dinâmica para evitar erros de build
+export const dynamic = "force-dynamic";
+
 type ModuleItem = {
   id: string;
   title: string;

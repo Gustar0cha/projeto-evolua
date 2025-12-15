@@ -8,6 +8,9 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 
+// Força renderização dinâmica para evitar erros de build
+export const dynamic = "force-dynamic";
+
 export default function NewModulePage() {
   const router = useRouter();
   const { user } = useAuth();

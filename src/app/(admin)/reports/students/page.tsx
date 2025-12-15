@@ -6,6 +6,9 @@ import Badge from "@/components/Badge";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
+// Força renderização dinâmica para evitar erros de build
+export const dynamic = "force-dynamic";
+
 type StudentReport = {
   id: string;
   name: string;

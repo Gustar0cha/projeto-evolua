@@ -13,6 +13,9 @@ import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import type { Profile } from "@/lib/supabase";
 
+// Força renderização dinâmica para evitar erros de build
+export const dynamic = "force-dynamic";
+
 type UserWithEmail = Profile & { email: string };
 
 export default function UsersPage() {
