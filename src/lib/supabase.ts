@@ -1,8 +1,15 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Cliente Supabase
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+// Cliente Supabase - com fallback para evitar erros de build
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
+
+// Validação em runtime (apenas no cliente ou servidor, não durante build)
+if (typeof window !== 'undefined' || process.env.NODE_ENV !== 'production') {
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+        console.warn('⚠️ Supabase environment variables are not set. Using placeholder values.')
+    }
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
