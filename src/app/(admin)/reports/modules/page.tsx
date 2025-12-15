@@ -1,65 +1,136 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "@/components/Card";
-import Select from "@/components/Select";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
-import ExportButtons from "@/components/ui/export-buttons";
-import { buildModulePerformanceMock } from "@/lib/report/adapters";
-import { buildWorkbookForModulePerformance, downloadWorkbook } from "@/lib/export/excel";
-import { exportModulePerformanceToPDF } from "@/lib/export/pdf";
+import Badge from "@/components/Badge";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
-const modules = [
-  { id: "mod1", name: "Comunicação" },
-  { id: "mod2", name: "Segurança" },
-  { id: "mod3", name: "Qualidade" },
-  { id: "mod4", name: "Compliance" },
-];
+type ModuleReport = {
+  id: string;
+  title: string;
+  status: 'publicado' | 'rascunho';
+  total_users: number;
+  completed: number;
+  in_progress: number;
+  pending: number;
+  avg_score: number;
+};
 
-export default function AdminModuleReportsPage() {
-  const [selected, setSelected] = useState<string>(modules[0].id);
-  const module = useMemo(() => modules.find((m) => m.id === selected)!, [selected]);
-  const perf = useMemo(() => buildModulePerformanceMock(module), [module]);
-  return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="section-title">Relatórios por Módulo</h2>
-        <ExportButtons
-          onExportPDF={() => exportModulePerformanceToPDF(perf, [])}
-          onExportExcel={() => {
-            const wb = buildWorkbookForModulePerformance(perf);
-            const ts = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
-            downloadWorkbook(wb, `relatorio-modulo-${module.id}-${ts}.xlsx`);
-          }}
-        />
-      </div>
-      <Card>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-          <Select
-            label="Módulo"
-            value={selected}
-            onChange={(e) => setSelected(e.target.value)}
-            options={modules.map((m) => ({ label: m.name, value: m.id }))}
-          />
+export default function ModulesReportPage() {
+  const [modules, setModules] = useState<ModuleReport[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadModulesReport();
+  }, []);
+
+  async function loadModulesReport() {
+    try {
+      setLoading(true);
+
+      const { data: modulesData, error } = await supabase
+        .from('modules')
+        .select(`
+          id,
+          title,
+          status,
+          user_module_progress(
+            status,
+            final_score
+          )
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const report: ModuleReport[] = modulesData?.map((module: any) => {
+        const progress = module.user_module_progress || [];
+        const completed = progress.filter((p: any) => p.status === 'concluido').length;
+        const inProgress = progress.filter((p: any) => p.status === 'em_andamento').length;
+        const pending = progress.filter((p: any) => p.status === 'nao_iniciado').length;
+
+        const scores = progress
+          .filter((p: any) => p.final_score !== null)
+          .map((p: any) => p.final_score);
+        const avgScore = scores.length > 0
+          ? Math.round(scores.reduce((a: number, b: number) => a + b, 0) / scores.length)
+          : 0;
+
+        return {
+          id: module.id,
+          title: module.title,
+          status: module.status,
+          total_users: progress.length,
+          completed,
+          in_progress: inProgress,
+          pending,
+          avg_score: avgScore,
+        };
+      }) || [];
+
+      setModules(report);
+    } catch (error: any) {
+      console.error('Erro ao carregar relatório de módulos:', error);
+      toast.error('Erro ao carregar relatório');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-slate-600">Carregando relatório...</p>
         </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <h2 className="section-title">Relatório de Módulos</h2>
+
+      <Card>
         <div className="overflow-x-auto">
           <Table className="min-w-full">
             <TableHeader>
               <TableRow>
-                <TableHead>Aluno ID</TableHead>
-                <TableHead>Aluno</TableHead>
-                <TableHead>Pontuação (%)</TableHead>
-                <TableHead>Concluído em</TableHead>
+                <TableHead>Módulo</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Total Usuários</TableHead>
+                <TableHead>Concluídos</TableHead>
+                <TableHead>Em Andamento</TableHead>
+                <TableHead>Pendentes</TableHead>
+                <TableHead>Média de Pontuação</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {perf.students.map((s) => (
-                <TableRow key={s.id}>
-                  <TableCell>{s.id}</TableCell>
-                  <TableCell>{s.name}</TableCell>
-                  <TableCell>{s.scorePercent}</TableCell>
-                  <TableCell>{s.completedAt ?? ""}</TableCell>
+              {modules.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center text-slate-500 py-8">
+                    Nenhum módulo encontrado
+                  </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                modules.map((module) => (
+                  <TableRow key={module.id}>
+                    <TableCell className="font-medium">{module.title}</TableCell>
+                    <TableCell>
+                      <Badge variant={module.status === 'publicado' ? 'success' : 'warning'}>
+                        {module.status === 'publicado' ? 'Publicado' : 'Rascunho'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{module.total_users}</TableCell>
+                    <TableCell>{module.completed}</TableCell>
+                    <TableCell>{module.in_progress}</TableCell>
+                    <TableCell>{module.pending}</TableCell>
+                    <TableCell>{module.avg_score > 0 ? `${module.avg_score}%` : '-'}</TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>
@@ -67,4 +138,3 @@ export default function AdminModuleReportsPage() {
     </div>
   );
 }
-

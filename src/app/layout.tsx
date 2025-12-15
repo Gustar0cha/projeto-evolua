@@ -27,9 +27,20 @@ export default function RootLayout({
     <html lang="pt-br">
       <body className={`${inter.variable} ${geistMono.variable} antialiased`}>
         {children}
-        <Toaster position="top-right" richColors toastOptions={{
-          style: { backgroundColor: "var(--surface)", color: "var(--foreground)" },
-        }} />
+        <Toaster
+          position="top-right"
+          richColors
+          toastOptions={{
+            style: {
+              background: '#ffffff',
+              color: '#0f172a',
+              border: '1px solid #e2e8f0',
+              fontSize: '14px',
+              fontWeight: '500'
+            },
+            className: 'toast-custom',
+          }}
+        />
       </body>
     </html>
   );

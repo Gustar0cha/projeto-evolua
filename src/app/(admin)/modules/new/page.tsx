@@ -1,172 +1,105 @@
 "use client";
-import ModuleEditor from "@/components/ModuleEditor";
-
-const module = {
-  title: "🧠 Avaliação de Aprendizado – Programa de Desenvolvimento IDEIAS",
-  desc: "Este formulário tem como objetivo avaliar o aprendizado adquirido durante os módulos do Programa de Desenvolvimento Hospitalar da Prog Treinamento. Por favor, responda de forma sincera e objetiva. Suas respostas contribuirão para aprimorar continuamente a qualidade dos treinamentos.",
-  content: "",
-  questions: [
-    {
-      id: "q1",
-      type: "multiple",
-      text: "No contexto hospitalar, um líder eficaz é aquele que:",
-      options: [
-        { id: "q1o1", text: "Centraliza todas as decisões." },
-        { id: "q1o2", text: "Foca apenas em resultados técnicos." },
-        {
-          id: "q1o3",
-          text: "Inspira e engaja sua equipe por meio do exemplo e da comunicação clara.",
-          correct: true,
-        },
-        { id: "q1o4", text: "Evita feedbacks para não gerar desconforto." },
-      ],
-    },
-    {
-      id: "q2",
-      type: "multiple",
-      text: "A inteligência emocional ajuda o profissional a:",
-      options: [
-        { id: "q2o1", text: "Controlar as emoções dos outros." },
-        { id: "q2o2", text: "Reagir de forma automática em situações de estresse." },
-        {
-          id: "q2o3",
-          text: "Reconhecer e gerenciar as próprias emoções para manter equilíbrio nas relações.",
-          correct: true,
-        },
-        { id: "q2o4", text: "Evitar qualquer tipo de conflito." },
-      ],
-    },
-    {
-      id: "q3",
-      type: "multiple",
-      text: "Em uma negociação eficaz, é essencial:",
-      options: [
-        { id: "q3o1", text: "Impor a própria opinião." },
-        { id: "q3o2", text: "Ouvir ativamente e buscar soluções de ganho mútuo.", correct: true },
-        { id: "q3o3", text: "Ignorar os sentimentos envolvidos." },
-        { id: "q3o4", text: "Usar a hierarquia como argumento principal." },
-      ],
-    },
-    {
-      id: "q4",
-      type: "multiple",
-      text: "O protagonismo profissional se manifesta quando o colaborador:",
-      options: [
-        { id: "q4o1", text: "Espera ordens para agir." },
-        { id: "q4o2", text: "Reclama das dificuldades." },
-        {
-          id: "q4o3",
-          text: "Toma iniciativa e busca soluções que melhorem os resultados da equipe.",
-          correct: true,
-        },
-        { id: "q4o4", text: "Trabalha isoladamente." },
-      ],
-    },
-    {
-      id: "q5",
-      type: "multiple",
-      text: "A comunicação interpessoal eficaz no ambiente hospitalar exige:",
-      options: [
-        {
-          id: "q5o1",
-          text: "Empatia, escuta ativa e clareza na troca de informações.",
-          correct: true,
-        },
-        { id: "q5o2", text: "Uso de linguagem técnica apenas." },
-        { id: "q5o3", text: "Evitar conversas diretas." },
-        { id: "q5o4", text: "Falar mais alto para ser compreendido." },
-      ],
-    },
-    {
-      id: "q6",
-      type: "multiple",
-      text: "A visão sistêmica permite ao profissional:",
-      options: [
-        { id: "q6o1", text: "Enxergar apenas as tarefas do seu setor." },
-        {
-          id: "q6o2",
-          text: "Compreender como suas ações impactam todo o hospital.",
-          correct: true,
-        },
-        { id: "q6o3", text: "Focar exclusivamente nas metas individuais." },
-        { id: "q6o4", text: "Reduzir a cooperação entre áreas." },
-      ],
-    },
-    {
-      id: "q7",
-      type: "long_answer",
-      text: "Cite uma situação do seu dia a dia no hospital em que você poderá aplicar o que aprendeu sobre Gestão de Conflitos.",
-    },
-    {
-      id: "q8",
-      type: "multiple",
-      text: "O Professor mostrou que tem conhecimento do tema :",
-      options: [
-        { id: "q8o1", text: "Muito conhecimento.", correct: true },
-        { id: "q8o2", text: "Conhecimento regular." },
-        { id: "q8o3", text: "Pouco Conhecimento." },
-      ],
-    },
-    {
-      id: "q9",
-      type: "multiple",
-      text: "O Professor trouxe exemplos práticos para sala de aula:",
-      options: [
-        { id: "q9o1", text: "Sim, trouxe bastantes exemplos.", correct: true },
-        { id: "q9o2", text: "Sim, trouxe poucos exemplos." },
-        { id: "q9o3", text: "Não trouxe exemplos." },
-      ],
-    },
-    {
-      id: "q10",
-      type: "linear_scale",
-      text: "Liderança no Contexto Hospitalar",
-      min: 1,
-      max: 5,
-      minLabel: "Não aprendi nada",
-      maxLabel: "Aprendi totalmente",
-    },
-    {
-      id: "q11",
-      type: "linear_scale",
-      text: "Fundamentos da Inteligência Emocional",
-      min: 1,
-      max: 5,
-      minLabel: "Não aprendi nada",
-      maxLabel: "Aprendi totalmente",
-    },
-    {
-      id: "q12",
-      type: "linear_scale",
-      text: "Negociação e Gestão de Conflitos",
-      min: 1,
-      max: 5,
-      minLabel: "Não aprendi nada",
-      maxLabel: "Aprendi totalmente",
-    },
-    {
-      id: "q13",
-      type: "linear_scale",
-      text: "Protagonismo Profissional",
-      min: 1,
-      max: 5,
-      minLabel: "Não aprendi nada",
-      maxLabel: "Aprendi totalmente",
-    },
-    {
-      id: "q14",
-      type: "linear_scale",
-      text: "Comunicação Interpessoal e Visão Sistêmica",
-      min: 1,
-      max: 5,
-      minLabel: "Não aprendi nada",
-      maxLabel: "Aprendi totalmente",
-    },
-  ],
-  status: "rascunho",
-  publishAt: "",
-};
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import Card from "@/components/Card";
+import Input from "@/components/Input";
+import Button from "@/components/Button";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function NewModulePage() {
-  return <ModuleEditor module={module as any} />;
+  const router = useRouter();
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+
+  async function handleCreate() {
+    if (!title.trim()) {
+      toast.error('Digite o título do módulo');
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const { data, error } = await supabase
+        .from('modules')
+        .insert([
+          {
+            title: title.trim(),
+            description: description.trim() || null,
+            status: 'rascunho'
+          }
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast.success('Módulo criado com sucesso!');
+      router.push(`/modules/${data.id}`);
+    } catch (error: any) {
+      console.error('Erro ao criar módulo:', error);
+      toast.error(`Erro ao criar módulo: ${error.message || 'Erro desconhecido'}`);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="section-title">Criar Novo Módulo</h2>
+        <Button variant="secondary" onClick={() => router.back()}>
+          Cancelar
+        </Button>
+      </div>
+
+      <Card>
+        <div className="space-y-6">
+          <Input
+            label="Título do Módulo"
+            placeholder="Ex: Introdução à Segurança do Trabalho"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700">
+              Descrição (opcional)
+            </label>
+            <textarea
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary focus:ring-primary"
+              placeholder="Descreva o conteúdo e objetivos deste módulo..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={4}
+            />
+          </div>
+
+          <div className="flex gap-3">
+            <Button onClick={handleCreate} disabled={loading || !title.trim()}>
+              {loading ? 'Criando...' : 'Criar Módulo'}
+            </Button>
+            <Button variant="secondary" onClick={() => router.back()}>
+              Cancelar
+            </Button>
+          </div>
+
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+            <h3 className="font-semibold text-blue-900 mb-2">ℹ️ Próximos Passos</h3>
+            <ul className="text-sm text-blue-800 space-y-1">
+              <li>1. Crie o módulo com título e descrição</li>
+              <li>2. Adicione seções (vídeo, PDF, quiz, etc.)</li>
+              <li>3. Configure as questões e atividades</li>
+              <li>4. Publique o módulo para disponibilizar aos colaboradores</li>
+            </ul>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
 }

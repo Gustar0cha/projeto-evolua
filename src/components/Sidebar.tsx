@@ -68,7 +68,7 @@ export function Sidebar({ collapsed = false, onToggle, userName, role = "gestor"
   return (
     <aside
       className={clsx(
-        "h-screen border-r border-slate-200 bg-white flex flex-col overflow-hidden transition-all duration-300 ease-in-out",
+        "sticky top-0 h-screen border-r border-slate-200 bg-white flex flex-col overflow-y-auto transition-all duration-300 ease-in-out",
         collapsed ? "w-16" : "w-64"
       )}
     >

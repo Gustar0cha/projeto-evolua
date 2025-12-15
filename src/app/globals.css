@@ -131,3 +131,168 @@ textarea::placeholder {
 }
 
 /* slate-400 */
+
+/* Toast/Notification Styles */
+[data-sonner-toast] {
+  background: white !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+}
+
+[data-sonner-toast] [data-title] {
+  color: #0f172a !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
+
+[data-sonner-toast] [data-description] {
+  color: #475569 !important;
+  font-size: 13px !important;
+}
+
+/* Success toast */
+[data-sonner-toast][data-type="success"] {
+  border-left: 4px solid #22c55e !important;
+}
+
+[data-sonner-toast][data-type="success"] [data-icon] {
+  color: #22c55e !important;
+}
+
+/* Error toast */
+[data-sonner-toast][data-type="error"] {
+  border-left: 4px solid #ef4444 !important;
+}
+
+[data-sonner-toast][data-type="error"] [data-icon] {
+  color: #ef4444 !important;
+}
+
+/* Warning toast */
+[data-sonner-toast][data-type="warning"] {
+  border-left: 4px solid #f59e0b !important;
+}
+
+[data-sonner-toast][data-type="warning"] [data-icon] {
+  color: #f59e0b !important;
+}
+
+/* Info toast */
+[data-sonner-toast][data-type="info"] {
+  border-left: 4px solid #3b82f6 !important;
+}
+
+[data-sonner-toast][data-type="info"] [data-icon] {
+  color: #3b82f6 !important;
+}
+
+/* Dropdown Menu Styles */
+[role="menu"],
+[role="menuitem"],
+.dropdown-menu-content,
+[data-radix-popper-content-wrapper] {
+  background: white !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
+}
+
+[role="menuitem"],
+.dropdown-menu-item {
+  color: #0f172a !important;
+  font-size: 14px !important;
+  padding: 8px 12px !important;
+  cursor: pointer !important;
+}
+
+[role="menuitem"]:hover,
+.dropdown-menu-item:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+[role="menuitem"][data-destructive],
+.dropdown-menu-item[data-destructive] {
+  color: #ef4444 !important;
+}
+
+[role="menuitem"][data-destructive]:hover,
+.dropdown-menu-item[data-destructive]:hover {
+  background: #fee2e2 !important;
+  color: #dc2626 !important;
+}
+
+/* Dialog/Modal Styles */
+[role="dialog"],
+.dialog-content {
+  background: white !important;
+  color: #0f172a !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+[role="dialog"] h2,
+[role="dialog"] h3,
+.dialog-title {
+  color: #0f172a !important;
+  font-weight: 600 !important;
+}
+
+[role="dialog"] p,
+.dialog-description {
+  color: #475569 !important;
+}
+
+/* Inputs dentro de Dialogs/Modais */
+[role="dialog"] input,
+[role="dialog"] select,
+[role="dialog"] textarea {
+  background-color: white !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+[role="dialog"] input::placeholder,
+[role="dialog"] textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+[role="dialog"] input:focus,
+[role="dialog"] select:focus,
+[role="dialog"] textarea:focus {
+  border-color: var(--primary) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px var(--primary) !important;
+}
+
+[role="dialog"] label {
+  color: #374151 !important;
+  font-weight: 500 !important;
+}
+
+/* Select trigger dentro de dialogs */
+[role="dialog"] [role="combobox"],
+[role="dialog"] button[data-state] {
+  background-color: white !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+/* Select content/dropdown */
+[data-radix-select-viewport],
+[role="listbox"] {
+  background-color: white !important;
+}
+
+[role="option"] {
+  color: #0f172a !important;
+}
+
+[role="option"]:hover,
+[role="option"][data-highlighted] {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+[role="option"][data-state="checked"] {
+  background-color: #e0f2fe !important;
+  color: #0f172a !important;
+}

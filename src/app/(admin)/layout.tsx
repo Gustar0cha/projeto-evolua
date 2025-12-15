@@ -8,8 +8,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     try {
       const role = localStorage.getItem("role");
-      if (role !== "gestor") router.replace("/treinamentos");
-    } catch {}
+      console.log('🔍 [AdminLayout] Verificando role no localStorage:', role);
+
+      if (role !== "gestor") {
+        console.log('❌ [AdminLayout] Role não é gestor, redirecionando para /treinamentos');
+        router.replace("/treinamentos");
+      } else {
+        console.log('✅ [AdminLayout] Role é gestor, permanecendo no dashboard');
+      }
+    } catch (error) {
+      console.error('❌ [AdminLayout] Erro ao verificar role:', error);
+    }
   }, [router]);
   return <ManagerLayout>{children}</ManagerLayout>;
 }
