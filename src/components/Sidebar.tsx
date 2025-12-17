@@ -20,6 +20,7 @@ import {
   UserIcon,
   ChartBarIcon,
   PresentationChartBarIcon,
+  ChatBubbleBottomCenterTextIcon,
 } from "@heroicons/react/24/outline";
 // Logo removida da Sidebar conforme solicitação
 
@@ -56,6 +57,7 @@ const groups = [
     items: [
       { href: "/reports/students", label: "Relatórios de Alunos", icon: PresentationChartBarIcon },
       { href: "/reports/modules", label: "Relatórios de Módulos", icon: ChartBarIcon },
+      { href: "/feedbacks", label: "Feedbacks", icon: ChatBubbleBottomCenterTextIcon },
     ],
   },
 ];

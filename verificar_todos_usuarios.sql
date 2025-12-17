@@ -50,18 +50,7 @@ SELECT
   (SELECT COUNT(*) FROM profiles WHERE active = false) as profiles_inativos;
 
 -- 5. Ver detalhes completos (auth + profile)
-SELECT 
-  u.email as email_auth,
-  u.email_confirmed_at,
-  p.id as profile_id,
-  p.name,
-  p.email as email_profile,
-  p.role,
-  p.active,
-  u.created_at
-FROM auth.users u
-LEFT JOIN profiles p ON u.id = p.id
-ORDER BY u.created_at DESC;
+
 
 -- ============================================
 -- INTERPRETAÇÃO DOS RESULTADOS:

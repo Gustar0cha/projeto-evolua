@@ -64,55 +64,82 @@ export default function DashboardPage() {
     try {
       setLoading(true);
 
-      const { data: students } = await supabase
-        .from('profiles')
-        .select('id, name')
-        .eq('role', 'colaborador')
-        .eq('active', true);
+      // ✅ OTIMIZAÇÃO: Buscar TODOS os dados em paralelo (5 queries em vez de 100+)
+      const [
+        { data: students },
+        { data: modules },
+        { data: questions },
+        { data: allProgress },
+        { data: allAnswers }
+      ] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('id, name')
+          .eq('role', 'colaborador')
+          .eq('active', true),
+        supabase
+          .from('modules')
+          .select('id, title')
+          .eq('status', 'publicado'),
+        supabase
+          .from('quiz_questions')
+          .select('id'),
+        supabase
+          .from('user_module_progress')
+          .select('status, user_id, module_id'),
+        supabase
+          .from('user_quiz_answers')
+          .select('user_id, module_id, is_correct')
+      ]);
 
-      const { data: modules } = await supabase
-        .from('modules')
-        .select('id, title')
-        .eq('status', 'publicado');
-
-      const { data: questions } = await supabase
-        .from('quiz_questions')
-        .select('id');
-
-      const { data: allProgress } = await supabase
-        .from('user_module_progress')
-        .select('status, user_id');
-
+      // ✅ Processar dados em memória (sem queries adicionais)
       const completed = allProgress?.filter(p => p.status === 'concluido').length || 0;
       const total = allProgress?.length || 1;
       const activeStudentsSet = new Set(allProgress?.map(p => p.user_id) || []);
 
-      const studentPerfs: StudentPerformance[] = [];
+      // Criar maps para lookup rápido
+      const answersByUser = new Map<string, typeof allAnswers>();
+      const answersByModule = new Map<string, typeof allAnswers>();
+      allAnswers?.forEach(answer => {
+        // Por usuário
+        const userAnswers = answersByUser.get(answer.user_id) || [];
+        userAnswers.push(answer);
+        answersByUser.set(answer.user_id, userAnswers);
+        // Por módulo
+        const moduleAnswers = answersByModule.get(answer.module_id) || [];
+        moduleAnswers.push(answer);
+        answersByModule.set(answer.module_id, moduleAnswers);
+      });
 
-      for (const student of students || []) {
-        const { data: answers } = await supabase
-          .from('user_quiz_answers')
-          .select(`
-            module_id,
-            is_correct,
-            modules(title)
-          `)
-          .eq('user_id', student.id);
+      const progressByUser = new Map<string, typeof allProgress>();
+      const progressByModule = new Map<string, typeof allProgress>();
+      allProgress?.forEach(progress => {
+        // Por usuário
+        const userProgress = progressByUser.get(progress.user_id) || [];
+        userProgress.push(progress);
+        progressByUser.set(progress.user_id, userProgress);
+        // Por módulo
+        const moduleProgress = progressByModule.get(progress.module_id) || [];
+        moduleProgress.push(progress);
+        progressByModule.set(progress.module_id, moduleProgress);
+      });
 
-        const { data: studentProgress } = await supabase
-          .from('user_module_progress')
-          .select('status')
-          .eq('user_id', student.id)
-          .eq('status', 'concluido');
+      const modulesMap = new Map(modules?.map(m => [m.id, m]) || []);
+
+      // ✅ Calcular performance dos alunos SEM queries adicionais
+      const studentPerfs: StudentPerformance[] = (students || []).map(student => {
+        const answers = answersByUser.get(student.id) || [];
+        const progress = progressByUser.get(student.id) || [];
 
         const moduleScoresMap: Record<string, { correct: number; total: number; name: string }> = {};
 
-        for (const answer of answers || []) {
+        for (const answer of answers) {
           if (!moduleScoresMap[answer.module_id]) {
+            const module = modulesMap.get(answer.module_id);
             moduleScoresMap[answer.module_id] = {
               correct: 0,
               total: 0,
-              name: (answer.modules as any)?.title || 'Módulo'
+              name: module?.title || 'Módulo'
             };
           }
           moduleScoresMap[answer.module_id].total++;
@@ -130,40 +157,32 @@ export default function DashboardPage() {
           ? Math.round(moduleScores.reduce((sum, m) => sum + m.score, 0) / moduleScores.length)
           : 0;
 
-        studentPerfs.push({
+        return {
           studentName: student.name,
           moduleScores,
           averageScore: avgScore,
-          completedModules: studentProgress?.length || 0
-        });
-      }
+          completedModules: progress.filter(p => p.status === 'concluido').length
+        };
+      });
 
-      const modStats: ModuleStats[] = [];
+      // ✅ Calcular stats dos módulos SEM queries adicionais
+      const modStats: ModuleStats[] = (modules || []).map(module => {
+        const moduleProgress = progressByModule.get(module.id) || [];
+        const moduleAnswers = answersByModule.get(module.id) || [];
 
-      for (const module of modules || []) {
-        const { data: moduleProgress } = await supabase
-          .from('user_module_progress')
-          .select('status')
-          .eq('module_id', module.id);
-
-        const { data: moduleAnswers } = await supabase
-          .from('user_quiz_answers')
-          .select('is_correct')
-          .eq('module_id', module.id);
-
-        const completedCount = moduleProgress?.filter(p => p.status === 'concluido').length || 0;
-        const correctAnswers = moduleAnswers?.filter(a => a.is_correct).length || 0;
-        const totalAnswers = moduleAnswers?.length || 1;
+        const completedCount = moduleProgress.filter(p => p.status === 'concluido').length;
+        const correctAnswers = moduleAnswers.filter(a => a.is_correct).length;
+        const totalAnswers = moduleAnswers.length || 1;
         const avgScore = Math.round((correctAnswers / totalAnswers) * 100);
 
-        modStats.push({
+        return {
           moduleName: module.title,
-          totalStudents: moduleProgress?.length || 0,
+          totalStudents: moduleProgress.length,
           completed: completedCount,
           averageScore: avgScore,
-          completionRate: moduleProgress?.length ? Math.round((completedCount / moduleProgress.length) * 100) : 0
-        });
-      }
+          completionRate: moduleProgress.length ? Math.round((completedCount / moduleProgress.length) * 100) : 0
+        };
+      });
 
       setStats({
         totalStudents: students?.length || 0,

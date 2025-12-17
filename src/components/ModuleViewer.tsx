@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Card from "@/components/Card";
 import Button from "@/components/Button";
+import PdfViewer from "@/components/PdfViewer";
 import { CheckCircleIcon, PlayCircleIcon, DocumentTextIcon, ChatBubbleLeftRightIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import { CheckCircleIcon as CheckCircleSolidIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";
@@ -135,17 +136,15 @@ export default function ModuleViewer({ moduleId, moduleTitle, sections }: Module
                         )}
 
                         {currentSection.type === 'pdf' && (
-                            <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-slate-200 rounded-lg bg-slate-50">
-                                <DocumentTextIcon className="w-16 h-16 text-slate-400 mb-4" />
-                                <p className="text-slate-600 mb-4 text-center">
-                                    Clique abaixo para acessar o material de leitura.
-                                </p>
+                            <div>
                                 {currentSection.pdfUrl ? (
-                                    <a href={currentSection.pdfUrl} target="_blank" rel="noopener noreferrer">
-                                        <Button variant="secondary">Abrir PDF</Button>
-                                    </a>
+                                    <PdfViewer pdfData={currentSection.pdfUrl} title={currentSection.title} />
                                 ) : (
-                                    <Button disabled variant="secondary">PDF Indisponível</Button>
+                                    <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-slate-200 rounded-lg bg-slate-50">
+                                        <DocumentTextIcon className="w-16 h-16 text-slate-300 mb-4" />
+                                        <p className="text-slate-500 font-medium">PDF não disponível</p>
+                                        <p className="text-slate-400 text-sm mt-1">O material ainda não foi carregado</p>
+                                    </div>
                                 )}
                             </div>
                         )}

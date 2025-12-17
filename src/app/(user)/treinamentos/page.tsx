@@ -34,36 +34,39 @@ export default function MyTrainingsPage() {
     try {
       setLoading(true);
 
-      // Buscar todos os módulos publicados
-      const { data: modules, error: modulesError } = await supabase
-        .from('modules')
-        .select('*')
-        .eq('status', 'publicado')
-        .order('created_at', { ascending: false });
+      // ✅ OTIMIZAÇÃO: Buscar módulos e progresso em PARALELO
+      const [
+        { data: modules, error: modulesError },
+        { data: progress, error: progressError }
+      ] = await Promise.all([
+        supabase
+          .from('modules')
+          .select('id, title, description, cover_image')  // ✅ Só campos necessários (removido SELECT *)
+          .eq('status', 'publicado')
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('user_module_progress')
+          .select('module_id, status')
+          .eq('user_id', user?.id)
+      ]);
 
       if (modulesError) throw modulesError;
-
-      // Buscar progresso do usuário para cada módulo
-      const { data: progress, error: progressError } = await supabase
-        .from('user_module_progress')
-        .select('module_id, status')
-        .eq('user_id', user?.id);
-
       if (progressError) {
         console.error('Erro ao buscar progresso:', progressError);
       }
 
+      // ✅ Usar Map para lookup O(1) em vez de find() O(n)
+      const progressMap = new Map(progress?.map(p => [p.module_id, p.status]) || []);
+
       // Mapear módulos com status
       const trainingsData: Training[] = modules?.map(m => {
-        const userProgress = progress?.find(p => p.module_id === m.id);
+        const userStatus = progressMap.get(m.id);
         let status: "Pendente" | "Em Andamento" | "Concluído" = "Pendente";
 
-        if (userProgress) {
-          if (userProgress.status === 'concluido') {
-            status = "Concluído";
-          } else if (userProgress.status === 'em_andamento') {
-            status = "Em Andamento";
-          }
+        if (userStatus === 'concluido') {
+          status = "Concluído";
+        } else if (userStatus === 'em_andamento') {
+          status = "Em Andamento";
         }
 
         return {

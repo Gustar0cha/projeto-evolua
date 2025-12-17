@@ -5,11 +5,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import Card from "@/components/Card";
 import Button from "@/components/Button";
+import PdfViewer from "@/components/PdfViewer";
+import FeedbackModal from "@/components/FeedbackModal";
 import { useRouter } from "next/navigation";
 
 type Section = {
   id: string;
-  type: 'video' | 'quiz' | 'text';
+  type: 'video' | 'quiz' | 'text' | 'pdf';
   title: string;
   content: string;
   order_index: number;
@@ -31,6 +33,7 @@ export default function ModuleClientPage({ id }: { id: string }) {
   const [questions, setQuestions] = useState<Record<string, Question[]>>({});
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [currentSection, setCurrentSection] = useState(0);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -42,46 +45,53 @@ export default function ModuleClientPage({ id }: { id: string }) {
     try {
       setLoading(true);
 
-      // Carregar módulo
-      const { data: moduleData, error: moduleError } = await supabase
-        .from('modules')
-        .select('*')
-        .eq('id', id)
-        .single();
+      // ✅ OTIMIZAÇÃO: Buscar módulo e seções em paralelo
+      const [
+        { data: moduleData, error: moduleError },
+        { data: sectionsData, error: sectionsError }
+      ] = await Promise.all([
+        supabase
+          .from('modules')
+          .select('id, title, description, cover_image, status')  // ✅ Só campos necessários
+          .eq('id', id)
+          .single(),
+        supabase
+          .from('module_sections')
+          .select('id, type, title, content, order_index')  // ✅ Só campos necessários
+          .eq('module_id', id)
+          .order('order_index')
+      ]);
 
       if (moduleError) throw moduleError;
-      setModule(moduleData);
-
-      // Carregar seções
-      const { data: sectionsData, error: sectionsError } = await supabase
-        .from('module_sections')
-        .select('*')
-        .eq('module_id', id)
-        .order('order_index');
-
       if (sectionsError) throw sectionsError;
+
+      setModule(moduleData);
       setSections(sectionsData || []);
 
-      // Carregar questões para seções de quiz
-      if (sectionsData && sectionsData.length > 0) {
+      // ✅ OTIMIZAÇÃO: Buscar TODAS questões de uma vez usando IN()
+      const quizSectionIds = sectionsData
+        ?.filter(s => s.type === 'quiz')
+        .map(s => s.id) || [];
+
+      if (quizSectionIds.length > 0) {
+        // Uma única query para TODAS as questões de todos os quizzes
+        const { data: allQuestionsData } = await supabase
+          .from('quiz_questions')
+          .select('id, section_id, question_text, question_type, options, order_index')
+          .in('section_id', quizSectionIds)
+          .order('order_index');
+
+        // ✅ Processar em memória (agrupar por section_id)
         const questionsMap: Record<string, Question[]> = {};
-
-        for (const section of sectionsData) {
-          if (section.type === 'quiz') {
-            const { data: questionsData } = await supabase
-              .from('quiz_questions')
-              .select('*')
-              .eq('section_id', section.id)
-              .order('order_index');
-
-            if (questionsData) {
-              questionsMap[section.id] = questionsData.map(q => ({
-                ...q,
-                options: q.options ? JSON.parse(q.options as any) : undefined
-              }));
-            }
+        allQuestionsData?.forEach(q => {
+          if (!questionsMap[q.section_id]) {
+            questionsMap[q.section_id] = [];
           }
-        }
+          questionsMap[q.section_id].push({
+            ...q,
+            options: q.options ? (typeof q.options === 'string' ? JSON.parse(q.options) : q.options) : undefined
+          });
+        });
 
         setQuestions(questionsMap);
       }
@@ -143,6 +153,48 @@ export default function ModuleClientPage({ id }: { id: string }) {
     }
   }
 
+  // Função para abrir o modal de feedback
+  function handleCompleteClick() {
+    setShowFeedbackModal(true);
+  }
+
+  // Função para salvar o feedback e concluir o módulo
+  async function handleFeedbackSubmit(rating: number, comment: string) {
+    if (!user) return;
+
+    try {
+      // Salvar o feedback
+      const { error: feedbackError } = await supabase
+        .from('module_feedbacks')
+        .upsert({
+          user_id: user.id,
+          module_id: id,
+          rating,
+          comment: comment.trim() || null
+        }, {
+          onConflict: 'user_id,module_id'
+        });
+
+      if (feedbackError) {
+        console.error('Erro ao salvar feedback:', feedbackError);
+        // Continuar mesmo se o feedback falhar
+      }
+
+      // Concluir o módulo
+      await completeModule();
+    } catch (error: any) {
+      console.error('Erro ao processar feedback:', error);
+      // Mesmo com erro, tentar concluir
+      await completeModule();
+    }
+  }
+
+  // Função para pular o feedback e concluir diretamente
+  async function handleSkipFeedback() {
+    setShowFeedbackModal(false);
+    await completeModule();
+  }
+
   async function completeModule() {
     if (!user) return;
 
@@ -162,6 +214,7 @@ export default function ModuleClientPage({ id }: { id: string }) {
       if (error) throw error;
 
       toast.success('Módulo concluído com sucesso!');
+      setShowFeedbackModal(false);
       router.push('/treinamentos');
     } catch (error: any) {
       console.error('Erro ao concluir módulo:', error);
@@ -252,6 +305,10 @@ export default function ModuleClientPage({ id }: { id: string }) {
           </div>
         )}
 
+        {section.type === 'pdf' && section.content && (
+          <PdfViewer pdfData={section.content} title={section.title} />
+        )}
+
         {section.type === 'quiz' && questions[section.id] && (
           <div className="space-y-6">
             {questions[section.id].map((question, qIndex) => (
@@ -335,11 +392,19 @@ export default function ModuleClientPage({ id }: { id: string }) {
             Próxima →
           </Button>
         ) : (
-          <Button onClick={completeModule}>
+          <Button onClick={handleCompleteClick}>
             Concluir Módulo ✓
           </Button>
         )}
       </div>
+
+      {/* Modal de Feedback */}
+      <FeedbackModal
+        isOpen={showFeedbackModal}
+        onClose={handleSkipFeedback}
+        onSubmit={handleFeedbackSubmit}
+        moduleTitle={module?.title || 'Módulo'}
+      />
     </div>
   );
 }

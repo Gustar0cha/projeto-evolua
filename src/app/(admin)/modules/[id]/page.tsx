@@ -9,13 +9,14 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import ImageUpload from "@/components/ImageUpload";
+import PdfUpload from "@/components/PdfUpload";
 
 // Força renderização dinâmica para evitar erros de build
 export const dynamic = "force-dynamic";
 
 type Section = {
   id: string;
-  type: 'video' | 'quiz' | 'text';
+  type: 'video' | 'quiz' | 'text' | 'pdf';
   title: string;
   content: string;
   order_index: number;
@@ -281,11 +282,11 @@ export default function EditModulePage({ params }: { params: Promise<{ id: strin
     }
   }
 
-  function addSection(type: 'video' | 'quiz' | 'text') {
+  function addSection(type: 'video' | 'quiz' | 'text' | 'pdf') {
     const newSection: Section = {
       id: `temp-${Date.now()}`,
       type,
-      title: type === 'video' ? 'Vídeo' : type === 'quiz' ? 'Questionário' : 'Texto',
+      title: type === 'video' ? 'Vídeo' : type === 'quiz' ? 'Questionário' : type === 'pdf' ? 'Material em PDF' : 'Texto',
       content: '',
       order_index: sections.length
     };
@@ -402,7 +403,7 @@ export default function EditModulePage({ params }: { params: Promise<{ id: strin
             <div key={section.id} className="border border-slate-200 rounded-lg p-4 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-slate-900">
-                  {section.type === 'video' ? '🎥' : section.type === 'quiz' ? '📝' : '📄'} Seção {sectionIndex + 1}
+                  {section.type === 'video' ? '🎥' : section.type === 'quiz' ? '📝' : section.type === 'pdf' ? '📕' : '📄'} Seção {sectionIndex + 1}
                 </h3>
                 <Button
                   variant="danger"
@@ -437,6 +438,25 @@ export default function EditModulePage({ params }: { params: Promise<{ id: strin
                     onChange={(e) => updateSection(sectionIndex, 'content', e.target.value)}
                     rows={4}
                   />
+                </div>
+              )}
+
+              {section.type === 'pdf' && (
+                <div className="space-y-3">
+                  <PdfUpload
+                    currentPdf={section.content}
+                    onPdfUploaded={(data) => updateSection(sectionIndex, 'content', data)}
+                    onPdfRemoved={() => updateSection(sectionIndex, 'content', '')}
+                    showPreview={true}
+                  />
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700">Descrição/Instruções (opcional)</label>
+                    <textarea
+                      className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+                      placeholder="Instruções de leitura para o aluno..."
+                      rows={2}
+                    />
+                  </div>
                 </div>
               )}
 
@@ -554,9 +574,12 @@ export default function EditModulePage({ params }: { params: Promise<{ id: strin
             </div>
           ))}
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button onClick={() => addSection('video')}>
               + Adicionar Vídeo
+            </Button>
+            <Button onClick={() => addSection('pdf')} variant="secondary">
+              + Adicionar PDF
             </Button>
             <Button onClick={() => addSection('quiz')} variant="secondary">
               + Adicionar Quiz
