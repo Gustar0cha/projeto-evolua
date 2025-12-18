@@ -145,12 +145,9 @@ export default function MyTrainingsPage() {
                       {t.title}
                     </h3>
                   )}
-                  <p className="text-sm text-slate-600 line-clamp-3 flex-1">
-                    {t.description}
-                  </p>
                   <div className="mt-auto pt-3 border-t border-slate-100">
                     <span className="text-sm text-primary font-medium group-hover:underline">
-                      Acessar treinamento →
+                      Iniciar Avaliação
                     </span>
                   </div>
                 </div>

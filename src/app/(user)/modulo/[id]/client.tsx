@@ -245,6 +245,24 @@ export default function ModuleClientPage({ id }: { id: string }) {
 
   const section = sections[currentSection];
 
+  // Calcular total de perguntas em todas as seções de quiz
+  const totalQuizQuestions = sections
+    .filter(s => s.type === 'quiz')
+    .reduce((total, s) => total + (questions[s.id]?.length || 0), 0);
+
+  // Calcular o índice base (quantas perguntas existem ANTES da seção atual)
+  const getQuestionBaseIndex = () => {
+    let baseIndex = 0;
+    for (let i = 0; i < currentSection; i++) {
+      if (sections[i].type === 'quiz' && questions[sections[i].id]) {
+        baseIndex += questions[sections[i].id].length;
+      }
+    }
+    return baseIndex;
+  };
+
+  const questionBaseIndex = getQuestionBaseIndex();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -274,7 +292,11 @@ export default function ModuleClientPage({ id }: { id: string }) {
       </div>
 
       {/* Current Section */}
-      <Card title={`${section.title} (${currentSection + 1}/${sections.length})`}>
+      <Card title={
+        section.type === 'quiz' && totalQuizQuestions > 0
+          ? `${section.title} (${questionBaseIndex + 1}/${totalQuizQuestions})`
+          : `${section.title} (${currentSection + 1}/${sections.length})`
+      }>
         {section.type === 'video' && section.content && (
           <div className="aspect-video bg-slate-900 rounded overflow-hidden">
             {section.content.includes('vimeo.com') ? (
@@ -314,7 +336,7 @@ export default function ModuleClientPage({ id }: { id: string }) {
             {questions[section.id].map((question, qIndex) => (
               <div key={question.id} className="space-y-3">
                 <h4 className="font-medium text-slate-900">
-                  {qIndex + 1}. {question.question_text}
+                  {questionBaseIndex + qIndex + 1}. {question.question_text}
                 </h4>
 
                 {question.question_type === 'multiple_choice' && question.options && (
