@@ -7,7 +7,7 @@ import Button from "@/components/Button";
 import Select from "@/components/Select";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import ImageUpload from "@/components/ImageUpload";
 import PdfUpload from "@/components/PdfUpload";
 
@@ -351,6 +351,26 @@ export default function EditModulePage({ params }: { params: Promise<{ id: strin
     setSections(newSections);
   }
 
+  function moveSectionUp(index: number) {
+    if (index === 0) return; // Já está no topo
+
+    const newSections = [...sections];
+    [newSections[index - 1], newSections[index]] =
+      [newSections[index], newSections[index - 1]];
+
+    setSections(newSections);
+  }
+
+  function moveSectionDown(index: number) {
+    if (index === sections.length - 1) return; // Já está no final
+
+    const newSections = [...sections];
+    [newSections[index], newSections[index + 1]] =
+      [newSections[index + 1], newSections[index]];
+
+    setSections(newSections);
+  }
+
   function addQuestion(sectionId: string) {
     const newQuestion: Question = {
       id: `temp-${Date.now()}`,
@@ -382,6 +402,34 @@ export default function EditModulePage({ params }: { params: Promise<{ id: strin
       ...newQuestions[sectionId][questionIndex],
       [field]: value
     };
+    setQuestions(newQuestions);
+  }
+
+  function moveQuestionUp(sectionId: string, questionIndex: number) {
+    if (questionIndex === 0) return; // Já está no topo
+
+    const newQuestions = { ...questions };
+    const sectionQuestions = [...newQuestions[sectionId]];
+
+    // Trocar posições
+    [sectionQuestions[questionIndex - 1], sectionQuestions[questionIndex]] =
+      [sectionQuestions[questionIndex], sectionQuestions[questionIndex - 1]];
+
+    newQuestions[sectionId] = sectionQuestions;
+    setQuestions(newQuestions);
+  }
+
+  function moveQuestionDown(sectionId: string, questionIndex: number) {
+    const newQuestions = { ...questions };
+    const sectionQuestions = [...newQuestions[sectionId]];
+
+    if (questionIndex === sectionQuestions.length - 1) return; // Já está no final
+
+    // Trocar posições
+    [sectionQuestions[questionIndex], sectionQuestions[questionIndex + 1]] =
+      [sectionQuestions[questionIndex + 1], sectionQuestions[questionIndex]];
+
+    newQuestions[sectionId] = sectionQuestions;
     setQuestions(newQuestions);
   }
 
@@ -452,13 +500,34 @@ export default function EditModulePage({ params }: { params: Promise<{ id: strin
                 <h3 className="font-semibold text-slate-900">
                   {section.type === 'video' ? '🎥' : section.type === 'quiz' ? '📝' : section.type === 'pdf' ? '📕' : '📄'} Seção {sectionIndex + 1}
                 </h3>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => removeSection(sectionIndex)}
-                >
-                  <TrashIcon className="h-4 w-4" />
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => moveSectionUp(sectionIndex)}
+                    disabled={sectionIndex === 0}
+                    title="Mover seção para cima"
+                  >
+                    <ChevronUpIcon className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => moveSectionDown(sectionIndex)}
+                    disabled={sectionIndex === sections.length - 1}
+                    title="Mover seção para baixo"
+                  >
+                    <ChevronDownIcon className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => removeSection(sectionIndex)}
+                    title="Excluir seção"
+                  >
+                    <TrashIcon className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
 
               <Input
@@ -524,13 +593,34 @@ export default function EditModulePage({ params }: { params: Promise<{ id: strin
                     <div key={question.id} className="bg-slate-50 p-4 rounded space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium">Questão {qIndex + 1}</span>
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          onClick={() => removeQuestion(section.id, qIndex)}
-                        >
-                          <TrashIcon className="h-4 w-4" />
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => moveQuestionUp(section.id, qIndex)}
+                            disabled={qIndex === 0}
+                            title="Mover para cima"
+                          >
+                            <ChevronUpIcon className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => moveQuestionDown(section.id, qIndex)}
+                            disabled={qIndex === (questions[section.id] || []).length - 1}
+                            title="Mover para baixo"
+                          >
+                            <ChevronDownIcon className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={() => removeQuestion(section.id, qIndex)}
+                            title="Excluir questão"
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
 
                       <Input
