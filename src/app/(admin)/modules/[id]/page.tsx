@@ -293,9 +293,56 @@ export default function EditModulePage({ params }: { params: Promise<{ id: strin
     setSections([...sections, newSection]);
   }
 
-  function removeSection(index: number) {
+  async function removeSection(index: number) {
+    const sectionToRemove = sections[index];
+
+    // Se não for uma seção temporária, deletar do banco de dados
+    if (!sectionToRemove.id.startsWith('temp-')) {
+      try {
+        // Primeiro, deletar as questões associadas se for um quiz
+        if (sectionToRemove.type === 'quiz') {
+          const { error: questionsError } = await supabase
+            .from('quiz_questions')
+            .delete()
+            .eq('section_id', sectionToRemove.id);
+
+          if (questionsError) {
+            console.error('Erro ao deletar questões:', questionsError);
+            toast.error('Erro ao deletar questões da seção');
+            return;
+          }
+        }
+
+        // Deletar a seção
+        const { error: sectionError } = await supabase
+          .from('module_sections')
+          .delete()
+          .eq('id', sectionToRemove.id);
+
+        if (sectionError) {
+          console.error('Erro ao deletar seção:', sectionError);
+          toast.error('Erro ao deletar seção');
+          return;
+        }
+
+        toast.success('Seção excluída com sucesso!');
+      } catch (error: any) {
+        console.error('Erro ao excluir seção:', error);
+        toast.error('Erro ao excluir seção');
+        return;
+      }
+    }
+
+    // Remover do estado local
     const newSections = sections.filter((_, i) => i !== index);
     setSections(newSections);
+
+    // Remover questões do estado se existirem
+    if (questions[sectionToRemove.id]) {
+      const newQuestions = { ...questions };
+      delete newQuestions[sectionToRemove.id];
+      setQuestions(newQuestions);
+    }
   }
 
   function updateSection(index: number, field: keyof Section, value: any) {
